@@ -1,64 +1,34 @@
 from django.db import models
-from django.utils import timezone
-from django.urls import reverse
 from django.contrib.auth.models import User
-from taggit.managers import TaggableManager
+from django.utils.safestring import mark_safe
 
+class UserProfile(models.Model):
+    user = models.CharField(max_length=200)
+    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='./profile_pics/', blank=True)
 
-class PublishedManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(status='published')
-
-
-class Post(models.Model):
-    STATUS_CHOICES = (
-        ('draft', 'Draft'),
-        ('published', 'Published'),
-    )
-    title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250,
-                            unique_for_date='publish')
-    author = models.ForeignKey(User,
-                              on_delete=models.CASCADE,
-                              related_name='blog_posts')
-    body = models.TextField()
-    publish = models.DateTimeField(default=timezone.now)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=10,
-                              choices=STATUS_CHOICES,
-                              default='draft')
-
-    objects = models.Manager() # The default manager.
-    published = PublishedManager() # Our custom manager.
-    tags = TaggableManager()
-
-    class Meta:
-        ordering = ('-publish',)
+    def get_profile_picture(self):
+        return(mark_safe("<img src='{}' width='50px' height='50px' style='border-radius: 50%;' />".format(self.profile_picture.url)))
+    get_profile_picture.short_description = 'Profile Picture'
+    get_profile_picture.allow_tags = True
 
     def __str__(self):
-        return self.title
+        return(self.user)
 
-    def get_absolute_url(self):
-        return reverse('blog:post_detail',
-                       args=[self.publish.year,
-                             self.publish.month,
-                             self.publish.day, self.slug])
+class BlogPost(models.Model):
+    STATUS_CHOICES = (
+        ('draft', 'Draft'), 
+        ('published', 'Published'))
 
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    published_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post,
-                             on_delete=models.CASCADE,
-                             related_name='comments')
-    name = models.CharField(max_length=80)
-    email = models.EmailField()
-    body = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ('created',)
-
-    def __str__(self):
-        return f'Comment by {self.name} on {self.post}'
+    post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
