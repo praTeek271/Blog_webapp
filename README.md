@@ -7,6 +7,7 @@ This Repo consists of the following files :
 - db.sqlite3
 - manage.py
 - media
+- README.md
 - requirements.txt
 - template
 
@@ -20,4 +21,4 @@ This Repo consists of the following files :
 <br>
 
 
-- can be used for any file
+- uses threading module
