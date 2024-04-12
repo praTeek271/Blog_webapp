@@ -19,6 +19,8 @@ This Repo consists of the following files :
 ---
 <br><br>###	Features of the project:
 <br>
+1. This project is automated
+<br>
 
 
-- i am a bot
+- can be used for any repo
