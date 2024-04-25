@@ -1,4 +1,4 @@
-# Blog_webapp
+# blog_webapp
 This Repo consists of the following files :
 - .git
 - api
@@ -23,4 +23,4 @@ This Repo consists of the following files :
 <br>
 
 
-- can be used for any repo
+- supports windows
