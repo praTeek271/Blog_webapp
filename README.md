@@ -23,4 +23,4 @@ This Repo consists of the following files :
 <br>
 
 
-- supports windows
+- it works like a charm
